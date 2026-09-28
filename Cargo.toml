@@ -1,0 +1,26 @@
+# wallbar is a workspace so the wallpaper logic does not have to pretend to be
+# a menu bar app. `core` is the folder, the filenames, the pool, history and
+# the one call that sets the desktop; `app` is the menu bar app and the CLI,
+# which are the same binary.
+[workspace]
+resolver = "2"
+members = ["crates/core", "crates/app"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+rust-version = "1.98"
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+dirs = "5"
+objc2 = "0.6"
+block2 = "0.6"
+
+# Cargo only honours a profile at the workspace root. opt-level 2 is what the
+# sibling menu bar apps ship.
+[profile.release]
+opt-level = 2
