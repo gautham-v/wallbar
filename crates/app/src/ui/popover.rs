@@ -216,6 +216,9 @@ impl Popover {
             .w_full()
             .h(theme::HEADER_HEIGHT)
             .rounded_t(radius)
+            // Cover scales the image past the header's edges and gpui
+            // paints all of it, so the header has to do the cropping.
+            .overflow_hidden()
             .bg(theme.placeholder)
             .on_scroll_wheel(
                 cx.listener(|this, event: &ScrollWheelEvent, _, cx| {
@@ -223,8 +226,10 @@ impl Popover {
                 }),
             )
             .children(self.thumb.clone().map(|path| {
+                // Both edges absolute: with a relative width gpui lets the
+                // image's own aspect ratio pick the height.
                 img(path)
-                    .w_full()
+                    .w(px(theme::POPOVER_WIDTH_PX - 2.0))
                     .h(theme::HEADER_HEIGHT)
                     .rounded_t(radius)
                     .object_fit(ObjectFit::Cover)
@@ -335,8 +340,11 @@ impl Popover {
             .map(|range| {
                 (
                     range,
+                    // A highlight colour is blended over the ink, which
+                    // leaves grey-over-ink looking like ink; fading the ink
+                    // to the secondary alpha gives the real grey.
                     HighlightStyle {
-                        color: Some(self.theme.secondary.into()),
+                        fade_out: Some(1.0 - self.theme.secondary.a / self.theme.text.a),
                         ..Default::default()
                     },
                 )
