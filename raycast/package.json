@@ -1,0 +1,73 @@
+{
+  "$schema": "https://www.raycast.com/schemas/extension.json",
+  "name": "wallbar",
+  "title": "Wallbar",
+  "description": "Change the wallpaper and read about the painting on it.",
+  "icon": "wallbar.png",
+  "author": "gautham",
+  "license": "MIT",
+  "commands": [
+    {
+      "name": "about",
+      "title": "About This Wallpaper",
+      "subtitle": "Wallpaper",
+      "description": "Show the painting on the desktop: artist, year, where it hangs, and a short note.",
+      "mode": "view"
+    },
+    {
+      "name": "shuffle",
+      "title": "Shuffle Wallpaper",
+      "subtitle": "Wallpaper",
+      "description": "Set a random wallpaper that matches light or dark mode.",
+      "mode": "no-view"
+    },
+    {
+      "name": "next",
+      "title": "Next Wallpaper",
+      "subtitle": "Wallpaper",
+      "description": "Set the next wallpaper in folder order.",
+      "mode": "no-view"
+    },
+    {
+      "name": "previous",
+      "title": "Previous Wallpaper",
+      "subtitle": "Wallpaper",
+      "description": "Go back to the wallpaper you had before.",
+      "mode": "no-view"
+    },
+    {
+      "name": "browse",
+      "title": "Browse Wallpapers",
+      "subtitle": "Wallpaper",
+      "description": "See every wallpaper in the folder and pick one.",
+      "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "cliPath",
+      "title": "wallbar CLI",
+      "description": "Path to the wallbar binary.",
+      "type": "textfield",
+      "required": false,
+      "default": "~/.local/bin/wallbar"
+    }
+  ],
+  "dependencies": {
+    "@raycast/api": "^1.104.25",
+    "@raycast/utils": "^1.19.1"
+  },
+  "devDependencies": {
+    "@raycast/eslint-config": "^2.2.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "eslint": "^9.39.5",
+    "prettier": "^3.9.9",
+    "typescript": "^5.8.0"
+  },
+  "scripts": {
+    "build": "ray build -e dist",
+    "dev": "ray develop",
+    "lint": "ray lint"
+  }
+}
