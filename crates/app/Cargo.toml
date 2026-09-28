@@ -1,0 +1,56 @@
+[package]
+name = "wallbar"
+description = "Desktop wallpapers from the macOS menu bar, and a CLI for them"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+# The menu bar app and the CLI are one binary: no arguments runs the app, a
+# subcommand runs the CLI. The AppKit surface is the same one the sibling
+# menu bar apps use: an NSStatusItem and a borderless panel for the popover.
+[dependencies]
+wallbar-core = { path = "../core" }
+gpui = "0.2.2"
+futures = "0.3"
+anyhow.workspace = true
+serde_json.workspace = true
+dirs.workspace = true
+block2.workspace = true
+objc2.workspace = true
+objc2-service-management = { version = "0.3.2", default-features = false, features = ["SMAppService", "std", "objc2", "objc2-foundation"] }
+
+[dependencies.objc2-core-graphics]
+version = "0.3"
+features = ["CGContext", "CGPath"]
+
+[dependencies.objc2-foundation]
+version = "0.3"
+features = ["NSString", "NSGeometry", "NSArray", "NSEnumerator", "NSObjCRuntime", "NSError", "NSBundle", "NSURL", "NSDictionary"]
+
+[dependencies.objc2-app-kit]
+version = "0.3"
+features = [
+    "NSApplication",
+    "NSResponder",
+    "NSWindow",
+    "NSView",
+    "NSControl",
+    "NSButton",
+    "NSStatusBar",
+    "NSStatusItem",
+    "NSStatusBarButton",
+    "NSImage",
+    "NSScreen",
+    "NSEvent",
+    "NSCell",
+    "NSGraphicsContext",
+    "NSAppearance",
+    "block2",
+    "objc2-core-foundation",
+    "objc2-core-graphics",
+]
+
+[[bin]]
+name = "wallbar"
+path = "src/main.rs"
