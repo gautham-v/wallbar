@@ -44,7 +44,8 @@ All commands that print a painting print this object with `--json`
 ```
 `index` is 1-based position within the current pool, `count` the pool size.
 
-- `wallbar current [--json]` — the wallpaper on the main display.
+- `wallbar current [--all] [--json]` — the wallpaper on the main display
+  (`--all` only changes index/count to be relative to the whole folder).
   If it is not in the folder, `file`/`path` are still set and details are null, index 0.
 - `wallbar list [--json]` — array of the object above for every image in the folder
   (index/count relative to the whole folder), plus top-level `"current": "<file>"` when
@@ -52,13 +53,21 @@ All commands that print a painting print this object with `--json`
 - `wallbar next [--all] [--json]` — next in folder order within the pool, wraps.
   Pushes the old wallpaper onto history.
 - `wallbar prev [--all] [--json]` — pops history if non-empty, else previous in folder order.
+  History entries whose file is gone (or that are already showing) are skipped.
 - `wallbar shuffle [--all] [--json]` — random from pool excluding current; pushes history.
+  If the pool is only the current image, picks from the other images in the folder.
 - `wallbar set <filename|path> [--json]` — sets that image; pushes history.
-- `wallbar match-appearance on|off` — writes state.
+- `wallbar match-appearance on|off [--json]` — writes state; prints
+  `Match appearance: on` (or `{"match_appearance": true}` with `--json`).
 
 Pool: if `match_appearance` is true (default) and `--all` is not given, only images whose
 mood matches the current system appearance (`Dark` when macOS is in dark mode, else `Light`);
 if that pool would be empty, use all images. Otherwise all images.
 
 Setting applies to every screen (NSWorkspace setDesktopImageURL:forScreen:options: for each
-NSScreen). Exit code 0 on success; non-zero with a message on stderr on failure.
+NSScreen). Exit code 0 on success; 1 with a message on stderr on failure; 2 for a usage
+error (unknown command or option).
+
+Spaces (checked on macOS 15.8): once the wallpaper store has per-Space entries — which the
+first programmatic set creates — a set changes the Space in front only (on every display).
+Other Spaces keep their own wallpaper, and `current` reports the Space in front.
