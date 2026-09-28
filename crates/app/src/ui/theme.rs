@@ -118,8 +118,6 @@ pub const BUTTON_MIN_WIDTH: Pixels = px(30.);
 pub const BUTTON_RADIUS: Pixels = px(6.);
 pub const ICON: Pixels = px(12.);
 pub const SHUFFLE_ICON: Pixels = px(14.);
-/// The Year / Where label column.
-pub const LABEL_WIDTH: Pixels = px(46.);
 /// The Match appearance checkbox.
 pub const CHECKBOX: Pixels = px(14.);
 pub const CHECKBOX_RADIUS: Pixels = px(4.);
@@ -136,6 +134,9 @@ pub const CAPTION: Pixels = px(11.);
 pub const LINE_CAPTION: Pixels = px(14.);
 /// Medium, not semibold: semibold reads as shouting next to system menus.
 pub const WEIGHT_EMPHASIS: FontWeight = FontWeight::MEDIUM;
+/// Everything else. gpui rasterises SF heavier than AppKit does, so its
+/// light face is what matches a system menu's regular text.
+pub const WEIGHT_BODY: FontWeight = FontWeight::LIGHT;
 pub const UI_FAMILY: &str = ".SystemUIFont";
 
 #[cfg(test)]

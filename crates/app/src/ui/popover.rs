@@ -2,8 +2,8 @@
 //!
 //! Top to bottom, as in the approved mockup: the painting cropped wide, a
 //! row of previous / Shuffle / next with the pool position on the right, the
-//! title and artist, Year and Where, a few sentences about it, and a footer
-//! with the Match appearance box and a link out.
+//! title, then artist, year and museum in grey, a few sentences about it, and
+//! a footer with the Match light/dark mode box and a link out.
 //!
 //! Stepping is also ←/→ while the popover has focus, and a sideways swipe
 //! over the picture (one swipe, one step; see [`StepGate`]).
@@ -20,9 +20,9 @@ use std::time::Instant;
 use gpui::prelude::FluentBuilder;
 use gpui::{
     actions, div, img, px, size, svg, App, Context, Div, EventEmitter, FocusHandle, Focusable,
-    HighlightStyle, InteractiveElement, IntoElement, KeyBinding, ObjectFit, ParentElement, Render,
-    ScrollDelta, ScrollWheelEvent, SharedString, StatefulInteractiveElement, Styled, StyledImage,
-    StyledText, TouchPhase, Window,
+    InteractiveElement, IntoElement, KeyBinding, ObjectFit, ParentElement, Render, ScrollDelta,
+    ScrollWheelEvent, SharedString, StatefulInteractiveElement, Styled, StyledImage, TouchPhase,
+    Window,
 };
 use wallbar_core::gesture::{Phase, Step, StepGate};
 use wallbar_core::Painting;
@@ -322,56 +322,25 @@ impl Popover {
         )
     }
 
-    /// "Artist · Nationality, dates" as one paragraph, so it wraps as one.
-    fn artist_line(&self, p: &Painting) -> Option<impl IntoElement> {
-        if p.artist.is_empty() {
-            return None;
-        }
-        let (text, grey) = match &p.life {
-            Some(life) => {
-                let text = format!("{} \u{00b7} {}", p.artist, life);
-                let start = p.artist.len();
-                (text.clone(), Some(start..text.len()))
-            }
-            None => (p.artist.clone(), None),
+    /// "Artist, year" and then where it hangs, both grey under the title,
+    /// the way a system menu greys the lines under its header.
+    fn byline(&self, p: &Painting) -> Vec<gpui::AnyElement> {
+        let who = match (p.artist.is_empty(), &p.year) {
+            (false, Some(year)) => Some(format!("{}, {}", p.artist, year)),
+            (false, None) => Some(p.artist.clone()),
+            (true, Some(year)) => Some(year.clone()),
+            (true, None) => None,
         };
-        let highlights: Vec<_> = grey
+        [who, p.where_.clone()]
             .into_iter()
-            .map(|range| {
-                (
-                    range,
-                    // A highlight colour is blended over the ink, which
-                    // leaves grey-over-ink looking like ink; fading the ink
-                    // to the secondary alpha gives the real grey.
-                    HighlightStyle {
-                        fade_out: Some(1.0 - self.theme.secondary.a / self.theme.text.a),
-                        ..Default::default()
-                    },
-                )
+            .flatten()
+            .map(|line| {
+                div()
+                    .text_color(self.theme.secondary)
+                    .child(line)
+                    .into_any_element()
             })
-            .collect();
-        Some(
-            div()
-                .pt(px(1.))
-                .child(StyledText::new(text).with_highlights(highlights)),
-        )
-    }
-
-    fn fact(&self, label: &'static str, value: &Option<String>) -> Option<impl IntoElement> {
-        let value = value.clone()?;
-        Some(
-            div()
-                .flex()
-                .flex_row()
-                .child(
-                    div()
-                        .flex_none()
-                        .w(theme::LABEL_WIDTH)
-                        .text_color(self.theme.secondary)
-                        .child(label),
-                )
-                .child(div().flex_1().child(value)),
-        )
+            .collect()
     }
 
     fn body(&self, cx: &mut Context<Self>) -> impl IntoElement {
@@ -381,15 +350,7 @@ impl Popover {
             .map(|p| p.title.clone())
             .unwrap_or_else(|| "No wallpaper".to_owned())
             .into();
-        let facts: Vec<gpui::AnyElement> = painting
-            .map(|p| {
-                [self.fact("Year", &p.year), self.fact("Where", &p.where_)]
-                    .into_iter()
-                    .flatten()
-                    .map(IntoElement::into_any_element)
-                    .collect()
-            })
-            .unwrap_or_default();
+        let byline = painting.map(|p| self.byline(p)).unwrap_or_default();
         let about = painting.and_then(|p| p.about.clone());
         let link_label = painting.map(|p| p.link_label());
 
@@ -401,17 +362,7 @@ impl Popover {
             .pt(px(10.))
             .pb(px(10.))
             .child(div().font_weight(theme::WEIGHT_EMPHASIS).child(title))
-            .children(painting.and_then(|p| self.artist_line(p)))
-            .when(!facts.is_empty(), |el| {
-                el.child(
-                    div()
-                        .flex()
-                        .flex_col()
-                        .gap(px(2.))
-                        .pt(px(8.))
-                        .children(facts),
-                )
-            })
+            .child(div().pt(px(1.)).flex().flex_col().children(byline))
             .children(
                 about.map(|about| div().pt(px(8.)).line_height(theme::LINE_PROSE).child(about)),
             )
@@ -454,7 +405,7 @@ impl Popover {
                     .items_center()
                     .gap(px(6.))
                     .child(checkbox)
-                    .child("Match appearance")
+                    .child("Match light/dark mode")
                     .on_click(cx.listener(|this, _, _, cx| this.toggle_match(cx))),
             )
             .child(div().flex_1())
@@ -535,6 +486,7 @@ impl Render for Popover {
             .font_family(theme::UI_FAMILY)
             .text_size(theme::TEXT)
             .line_height(theme::LINE)
+            .font_weight(theme::WEIGHT_BODY)
             .text_color(theme.text)
             .child(self.header(cx))
             .child(self.nav(cx))

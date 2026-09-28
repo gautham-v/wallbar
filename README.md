@@ -7,7 +7,7 @@ next / previous / shuffle, and a wall label for whatever is on the desktop.
 
 - **Menu bar.** A thin picture-frame icon. Click it for the popover: the
   painting, previous / Shuffle / next with its place in the pool, title,
-  artist, year, where it hangs, a note about it, a Match appearance box and a
+  artist, year, where it hangs, a note about it, a Match light/dark mode box and a
   link out. ←/→ step while it is open, and so does a sideways swipe over the
   picture. Scrolling over the icon steps without opening anything.
 - **CLI.** The same binary with a subcommand (`wallbar next`, `wallbar list
@@ -19,7 +19,7 @@ next / previous / shuffle, and a wall label for whatever is on the desktop.
 
 `~/Pictures/wallpapers` (or `$WALLBAR_DIR`): `.jpg`, `.jpeg`, `.png` and
 `.heic` files named `<Light|Dark> - <Artist> - <Title>.<ext>`, sorted by name.
-With Match appearance on, next / previous / shuffle stay among the `Light`
+With Match light/dark mode on, next / previous / shuffle stay among the `Light`
 files in light mode and the `Dark` files in dark mode.
 
 Details come from an optional `paintings.json` in the folder, keyed by
@@ -40,7 +40,7 @@ On its first run from the bundle the app registers itself as a login item
 Items and it stays off.
 
 Thumbnails for the popover are cached in `~/Library/Caches/wallbar`; state
-(history and the Match appearance switch) is in
+(history and the Match light/dark mode switch) is in
 `~/Library/Application Support/wallbar/state.json`.
 
 ## Spaces
